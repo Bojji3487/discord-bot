@@ -20,8 +20,9 @@ class MyClient(discord.Client):
             my_prompt=message.content
             genai.configure(api_key=os.getenv("GEMINI_API"))
 
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(
+                contents=my_prompt,
                 contents=my_prompt,
             )
             await message.channel.send(response.text)
