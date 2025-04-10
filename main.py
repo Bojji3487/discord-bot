@@ -3,11 +3,9 @@ import os
 import google.genai as genAI
 
 my_secret = os.environ['SECRET_KEY']
-chat=""
-appId= 1359529744479162643
-publicKey="e0ecfbac052930657eb33356661b5ec06330f6c0452ca624feb367c3f64ee32f"
 
 class MyClient(discord.Client):
+    chat="Message history:\n"
     async def on_ready(self):
         print('Logged on as', self.user)
 
@@ -17,14 +15,17 @@ class MyClient(discord.Client):
             return
 
         if  self.user in message.mentions:
-            chat=f"{message.author}: {message.content}\n"
-            my_prompt=f"{chat}doctor-real:"
+            my_prompt=""
+            if(message.author!=self):
+                self.chat+=(f"Message from {message.author.name}:{message.content}\n")
+                my_prompt=f"{self.chat}current prompt:{message.content}\n"
             client= genAI.Client(api_key=os.getenv("GEMINI_API"))
 
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
-                contents=my_prompt,
+                contents="\n"+my_prompt,
             )
+            print(my_prompt)
             await message.channel.send(response.text)
 
 intents = discord.Intents.default()
