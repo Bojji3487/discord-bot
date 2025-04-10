@@ -16,9 +16,9 @@ class MyClient(discord.Client):
             return
 
         if "tellme" in message.content:
-            from google import genai 
+            import google.generativeai as genai
             my_prompt=message.content
-            client = genai.Client(api_key=os.getenv("GEMINI_API"))
+            genai.configure(api_key=os.getenv("GEMINI_API"))
 
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
