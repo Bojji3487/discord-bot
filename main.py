@@ -1,10 +1,11 @@
 import discord
 import os 
+import google.genai as genAI
 
 my_secret = os.environ['SECRET_KEY']
-
+chat=""
 appId= 1359529744479162643
-publicKey= "e0ecfbac052930657eb33356661b5ec06330f6c0452ca624feb367c3f64ee32f"
+publicKey="e0ecfbac052930657eb33356661b5ec06330f6c0452ca624feb367c3f64ee32f"
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -15,14 +16,13 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
 
-        if "tellme" in message.content:
-            import google.generativeai as genai
-            my_prompt=message.content
-            genai.configure(api_key=os.getenv("GEMINI_API"))
+        if  self.user in message.mentions:
+            chat=f"{message.author}: {message.content}\n"
+            my_prompt=f"{chat}doctor-real:"
+            client= genAI.Client(api_key=os.getenv("GEMINI_API"))
 
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(
-                contents=my_prompt,
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
                 contents=my_prompt,
             )
             await message.channel.send(response.text)
